@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+<body>
+    <h2>HEllO, {{username}}!</h2>
+    <div>
+        <input type="text" id="room" placeholder="Room">
+        <button onclick="joinRoom()">Join Room</button>
+        <button onclick="leaveRoom()">Leave Room</button>
+    </div>
+    <div id="chat-box"></div>
+    <input type="text" id="message" placeholder="Type a message">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        const socket = io();
+
+        function joinRoom() {
+            const room = document.getElementById('room').value;
+            socket.emit('join', {username: "{{ username }}", room});
+        }
+
+        function leaveRoom() {
+            const room = document.getElementById('room').value;
+            socket.emit('leave', {username: "{{ username }}", room});
+        }
+
+        function sendMessage() {
+            const msg = document.getElementById('message').value;
+            const room = document.getElementById('room').value;
+            socket.emit('message', {msg, username:"{{username}}",room});
+        }
+
+        socket.on('message', data => {
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML += `<p><strong>${data.username}:</strong> ${data.msg}</p>`;
+        });
+    </script>
+</body>
+</html>
